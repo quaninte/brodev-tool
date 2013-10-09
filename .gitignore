@@ -1,0 +1,11 @@
+# ide
+/.idea
+
+# vendor
+/vendor
+
+# config
+/config/config.yml
+
+# gen files
+/downloads

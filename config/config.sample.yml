@@ -1,0 +1,31 @@
+remotes:
+    remotename1:
+        host: 192.24.151.132
+        type: password
+        port: 22
+        params:
+            username: username
+            password: username
+        databases:
+            dbname:
+                type: mysql
+                username: root
+                password: root
+                port: 3306
+                host: 127.0.0.1
+    remotename2:
+        host: host2.com
+        type: publickey
+        params:
+            username: username
+            public_key: /path/to/public/key
+            private_key: /path/to/private/key
+            pass_phrase: passphrase
+        databases:
+            name:
+                type: mysql
+                name: dbname
+                username: root
+                password: root
+                port: 3306
+                host: 127.0.0.1

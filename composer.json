@@ -1,0 +1,13 @@
+{
+    "name": "brodev/tool",
+    "description": "Brodev tools",
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
+
+    "require": {
+        "herzult/php-ssh": "dev-master",
+        "cilex/cilex": "1.*",
+        "symfony/yaml": "2.*"
+    }
+}
