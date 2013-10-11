@@ -1,3 +1,6 @@
+# cron
+# m h dom m dow command
+# remotes
 remotes:
     remotename1:
         host: 192.24.151.132
@@ -13,6 +16,7 @@ remotes:
                 password: root
                 port: 3306
                 host: 127.0.0.1
+                cron: m h dom m dow
     remotename2:
         host: host2.com
         type: publickey
@@ -27,5 +31,4 @@ remotes:
                 name: dbname
                 username: root
                 password: root
-                port: 3306
-                host: 127.0.0.1
+                cron: m h dom m dow

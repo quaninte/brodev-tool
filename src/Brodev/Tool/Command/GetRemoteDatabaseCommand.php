@@ -59,6 +59,12 @@ class GetRemoteDatabaseCommand extends Command
         $remote['port'] = isset($remote['port'])? $remote['port']: 22;
 
         $database = $this->config['remotes'][$input->getArgument('remote')]['databases'][$input->getArgument('database')];
+        if (!isset($database['host'])) {
+            $database['host'] = 'localhost';
+        }
+        if (!isset($database['port'])) {
+            $database['port'] = 3306;
+        }
 
         // configuration
         $configuration = new Configuration($remote['host'], $remote['port']);
