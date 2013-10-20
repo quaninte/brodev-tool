@@ -92,21 +92,41 @@ class GetRemoteDatabaseCommand extends Command
 
         $output->writeln('Connected to server, current location is ' . $currentPath);
 
-        // dump database
-        $tmpDbFile = $input->getArgument('remote') . '.' . $input->getArgument('database') . date('.Y-m-d-h-s') . '.sql';
-        $cmdTemplate = 'mysqldump -u %username% -p%password% -h %host% --port=%port% %dbname% > "%tmpFile%"';
-        $cmd = str_replace(array(
-            '%username%', '%password%', '%host%', '%port%', '%dbname%', '%tmpFile%',
-        ), array(
-            $database['username'], $database['password'], $database['host'], $database['port'], $database['name'], $tmpDbFile,
-        ), $cmdTemplate);
-        $exec->run($cmd);
-        $output->writeln('Database is dumped to ' . $tmpDbFile);
+        $versionName = $input->getArgument('remote') . '.' . $input->getArgument('database') . date('.Y-m-d-h-s');
+
+        switch ($database['type']) {
+            case 'mongodb':
+                // dump database
+                $tmpDb = $versionName;
+                $cmdTemplate = 'mongodump -o "%outputPath%"';
+                $cmd = str_replace(array(
+                    '%outputPath%',
+                ), array(
+                    $tmpDb,
+                ), $cmdTemplate);
+
+                $exec->run($cmd);
+                $output->writeln('Database is dumped to ' . $tmpDb);
+
+                break;
+            case 'mysql':
+                default:
+                // dump database
+                $tmpDb = $versionName . '.sql';
+                $cmdTemplate = 'mysqldump -u %username% -p%password% -h %host% --port=%port% %dbname% > "%tmpFile%"';
+                $cmd = str_replace(array(
+                    '%username%', '%password%', '%host%', '%port%', '%dbname%', '%tmpFile%',
+                ), array(
+                    $database['username'], $database['password'], $database['host'], $database['port'], $database['name'], $tmpDb,
+                ), $cmdTemplate);
+                $exec->run($cmd);
+                $output->writeln('Database is dumped to ' . $tmpDb);
+        }
 
         // compress file
-        $tmpCompressedFileName = $tmpDbFile . '.tar.gz';
+        $tmpCompressedFileName = $tmpDb . '.tar.gz';
         $tmpCompressedFile = $currentPath . '/' . $tmpCompressedFileName;
-        $cmd = 'tar -zcvf "' . $tmpCompressedFileName . '" "' . $tmpDbFile . '"';
+        $cmd = 'tar -zcvf "' . $tmpCompressedFileName . '" "' . $tmpDb . '"';
         $exec->run($cmd);
         $output->writeln('Database is compressed to ' . $tmpCompressedFile);
 
@@ -119,7 +139,7 @@ class GetRemoteDatabaseCommand extends Command
         $sftp->receive($tmpCompressedFile, $localPath);
 
         // remove tmp files
-        $exec->run('rm -f ' . $tmpDbFile);
+        $exec->run('rm -f ' . $tmpDb);
         $exec->run('rm -f ' . $tmpCompressedFile);
 
         $output->writeln('Done');
