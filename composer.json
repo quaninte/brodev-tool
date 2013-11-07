@@ -8,6 +8,7 @@
     "require": {
         "herzult/php-ssh": "dev-master",
         "cilex/cilex": "1.*",
-        "symfony/yaml": "2.*"
+        "symfony/yaml": "2.*",
+        "aws/aws-sdk-php": "2.4.8"
     }
 }

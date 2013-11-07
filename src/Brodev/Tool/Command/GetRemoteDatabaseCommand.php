@@ -14,7 +14,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Ssh\Authentication\Password;
 use Ssh\Session;
-use Ssh\Exec;
+use Aws\S3\S3Client;
+use Aws\S3\Exception\S3Exception;
 
 class GetRemoteDatabaseCommand extends Command
 {
@@ -142,8 +143,46 @@ class GetRemoteDatabaseCommand extends Command
         $exec->run('rm -rf ' . $tmpDb);
         $exec->run('rm -rf ' . $tmpCompressedFile);
 
+        // do we need upload files to s3?
+        if (!isset($this->config['storage'])) {
+            $storage = array(
+                'type' => 'local',
+            );
+        } else {
+            $storage = $this->config['storage'];
+        }
+
+        if ($storage['type'] == 's3') {
+
+            $output->writeln('Uploading file to s3');
+
+            // Instantiate the S3 client with your AWS credentials and desired AWS region
+            $client = S3Client::factory(array(
+                'key'    => $storage['params']['key'],
+                'secret' => $storage['params']['secret'],
+            ));
+
+            // Upload a publicly accessible file. The file size, file type, and MD5 hash are automatically calculated by the SDK
+            try {
+                $filePath = $input->getArgument('remote') . '/' . $input->getArgument('database') . '/' . $tmpCompressedFileName;
+                $client->putObject(array(
+                    'Bucket' => $storage['params']['bucket'],
+                    'Key'    => $filePath,
+                    'Body'   => fopen($localPath, 'r'),
+                    'ACL'    => 'private',
+                ));
+
+
+                $output->writeln('File is successful uploaded to s3');
+
+                // remove local file
+                $exec->run('rm -f "' . $localPath . '"');
+            } catch (S3Exception $e) {
+                $output->writeln("There was an error uploading the file.");
+            }
+        }
+
         $output->writeln('Done');
     }
-
 
 }

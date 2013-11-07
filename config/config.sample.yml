@@ -1,3 +1,12 @@
+# storage
+storage:
+    type: local # local or s3
+    params:
+        ~
+#        key: s3-key
+#        secret: s3-secret
+#        bucket: s3-bucket
+
 # cron
 # m h dom m dow command
 # remotes
