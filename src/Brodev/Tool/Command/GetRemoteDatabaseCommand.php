@@ -139,8 +139,8 @@ class GetRemoteDatabaseCommand extends Command
         $sftp->receive($tmpCompressedFile, $localPath);
 
         // remove tmp files
-        $exec->run('rm -f ' . $tmpDb);
-        $exec->run('rm -f ' . $tmpCompressedFile);
+        $exec->run('rm -rf ' . $tmpDb);
+        $exec->run('rm -rf ' . $tmpCompressedFile);
 
         $output->writeln('Done');
     }
