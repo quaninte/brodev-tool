@@ -175,7 +175,7 @@ class WatchSpamCommand extends Command
     {
         $cmd = 'iptables -A INPUT -s %ip% -j DROP';
         $cmd = str_replace('%ip%', $ip, $cmd);
-//        exec($cmd);
+        exec($cmd);
     }
 
     /**
