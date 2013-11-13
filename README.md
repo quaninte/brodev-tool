@@ -4,7 +4,8 @@ Group of helper tools for developers and system admin
 
 ## Installation
 1. Clone repo
-2. Run ``php composer.phar install`` to install vendor
+2. Install dependencies (php ssh2, for ubuntu ``apt-get install libssh2-1-dev libssh2-php``)
+3. Run ``php composer.phar install`` to install vendor
 
 ## Remote database getter
 This tool help you quickly grab a copy of database from a remote server
