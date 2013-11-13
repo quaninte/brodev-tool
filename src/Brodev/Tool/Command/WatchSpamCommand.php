@@ -176,6 +176,11 @@ class WatchSpamCommand extends Command
         $cmd = 'iptables -A INPUT -s %ip% -j DROP';
         $cmd = str_replace('%ip%', $ip, $cmd);
         exec($cmd);
+
+        // log
+        $file = fopen('cache/block.log', 'a');
+        fwrite($file, $ip . "\n");
+        fclose($file);
     }
 
     /**
