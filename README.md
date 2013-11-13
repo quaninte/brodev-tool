@@ -27,7 +27,7 @@ This tool will watch apache (or nginx) log file, find spam IP using www.stopforu
 
 #### Setup apache2 log
 
-Create this file ``/etc/apache2/conf.d`` with content
+Create this file ``/etc/apache2/conf.d/bot_watch_access.log`` with content
 ```conf
 # Define an access log for VirtualHosts dedicated for spam watch
 LogFormat "%v:%p %a \"%{User-Agent}i\" %h %l %u %t \"%r\" %>s %O \"%{Referer}i\"" spam_combined
