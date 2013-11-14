@@ -189,6 +189,11 @@ class WatchSpamCommand extends Command
      */
     protected function addWhiteList($ip)
     {
+        // only add to white list once
+        if ($this->isInWhiteList($ip)) {
+            return;
+        }
+
         $data = unserialize($this->cache->get($this->whiteListIPCacheCode));
         if (!isset($data['ips'])) {
             $data['ips'] = array();
