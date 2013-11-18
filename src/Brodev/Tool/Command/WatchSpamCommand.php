@@ -44,7 +44,7 @@ class WatchSpamCommand extends Command
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->cache = new Cache;
-        $this->cache->setCacheDirectory('cache');
+        $this->cache->setCacheDirectory(ROOT . '/cache');
 
         if ($this->cache->check($this->whiteListIPCacheCode)) {
             $data = unserialize($this->cache->get($this->whiteListIPCacheCode));
@@ -99,6 +99,9 @@ class WatchSpamCommand extends Command
             }
         }
 
+        // save iptables rules
+        $cmd = 'sudo sh -c "iptables-save > /etc/iptables.rules"';
+        exec($cmd);
     }
 
     /**
@@ -178,7 +181,7 @@ class WatchSpamCommand extends Command
         exec($cmd);
 
         // log
-        $file = fopen('cache/block.log', 'a');
+        $file = fopen(ROOT . '/cache/block.log', 'a');
         fwrite($file, $ip . "\n");
         fclose($file);
     }
