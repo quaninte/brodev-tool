@@ -141,6 +141,12 @@ class WatchSpamCommand extends Command
         $url = 'http://www.stopforumspam.com/api?ip=' . $ip;
         $content = $this->getContent($url);
 
+        // limit exceed?
+        if (strpos($content, 'rate limit exceeded') !== false) {
+            // stop
+            die('limit exceeded');
+        }
+
         if (strpos($content, '<appears>yes</appears>') !== false) {
             return true;
         }
