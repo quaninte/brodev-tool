@@ -176,7 +176,7 @@ class GetRemoteDatabaseCommand extends Command
                 $output->writeln('File is successful uploaded to s3');
 
                 // remove local file
-                $exec->run('rm -f "' . $localPath . '"');
+                $exec->run('rm -rf "' . $localPath . '"');
             } catch (S3Exception $e) {
                 $output->writeln("There was an error uploading the file.");
             }
