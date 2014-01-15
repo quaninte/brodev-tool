@@ -15,4 +15,5 @@ $app->register(new \Cilex\Provider\ConfigServiceProvider(), array(
 $app->command(new \Brodev\Tool\Command\GetRemoteDatabaseCommand());
 $app->command(new \Brodev\Tool\Command\GetCrontabCommand());
 $app->command(new \Brodev\Tool\Command\WatchSpamCommand());
+$app->command(new \Brodev\Tool\Command\GetBackupLinkCommand());
 $app->run();
