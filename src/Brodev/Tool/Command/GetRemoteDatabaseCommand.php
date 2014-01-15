@@ -28,6 +28,9 @@ class GetRemoteDatabaseCommand extends Command
     {
         $this
             ->setName('brodev:tool:get-remote-db')
+            ->setAliases(array(
+                'get-remote-db',
+            ))
             ->setDescription('Get database of remote')
             ->addArgument('remote', InputArgument::REQUIRED, 'What remote do you want to get from?')
             ->addArgument('database', InputArgument::REQUIRED, 'What database do you want to get?')
