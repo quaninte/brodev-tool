@@ -24,6 +24,12 @@ class GetRemoteDatabaseCommand extends Command
      */
     protected $config;
 
+    /**
+     * Debug?
+     * @var bool
+     */
+    protected $debug = false;
+
     protected function configure()
     {
         $this
@@ -46,6 +52,12 @@ class GetRemoteDatabaseCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // Disable debug by default
+        if (isset($this->config['debug'])) {
+            $this->debug = $this->config['debug'];
+        }
+        $output->writeln('Debug:' . ($this->debug ? 'yes' : 'no'));
+
         // make sure remote existed
         if (!isset($this->config['remotes'][$input->getArgument('remote')])) {
             $output->writeln('Remote "' . $input->getArgument('remote') . '" not found');
@@ -63,12 +75,6 @@ class GetRemoteDatabaseCommand extends Command
         $remote['port'] = isset($remote['port'])? $remote['port']: 22;
 
         $database = $this->config['remotes'][$input->getArgument('remote')]['databases'][$input->getArgument('database')];
-        if (!isset($database['host'])) {
-            $database['host'] = 'localhost';
-        }
-        if (!isset($database['port'])) {
-            $database['port'] = 3306;
-        }
 
         // configuration
         $configuration = new Configuration($remote['host'], $remote['port']);
@@ -98,16 +104,29 @@ class GetRemoteDatabaseCommand extends Command
 
         $versionName = $input->getArgument('remote') . '.' . $input->getArgument('database') . date('.Y-m-d-h-s');
 
+        // default host = local
+        if (!isset($database['host'])) {
+            $database['host'] = '127.0.0.1';
+        }
         switch ($database['type']) {
             case 'mongodb':
+                // default port
+                if (!isset($database['port'])) {
+                    $database['port'] = 27017;
+                }
+
                 // dump database
                 $tmpDb = $versionName;
-                $cmdTemplate = 'mongodump -o "%outputPath%"';
+                $cmdTemplate = 'mongodump --host %host% --port %port% --db %dbname% --out "%outputPath%"';
                 $cmd = str_replace(array(
-                    '%outputPath%',
+                    '%host%', '%port%', '%dbname%', '%outputPath%',
                 ), array(
-                    $tmpDb,
+                    $database['host'], $database['port'], $database['name'], $tmpDb,
                 ), $cmdTemplate);
+
+                if ($this->debug) {
+                    $output->writeln('run ' . $cmd);
+                }
 
                 $exec->run($cmd);
                 $output->writeln('Database is dumped to ' . $tmpDb);
@@ -115,6 +134,11 @@ class GetRemoteDatabaseCommand extends Command
                 break;
             case 'mysql':
                 default:
+                // default port
+                if (!isset($database['port'])) {
+                    $database['port'] = 3306;
+                }
+
                 // dump database
                 $tmpDb = $versionName . '.sql';
                 $cmdTemplate = 'mysqldump -u %username% -p%password% -h %host% --port=%port% %dbname% > "%tmpFile%"';
@@ -123,6 +147,11 @@ class GetRemoteDatabaseCommand extends Command
                 ), array(
                     $database['username'], $database['password'], $database['host'], $database['port'], $database['name'], $tmpDb,
                 ), $cmdTemplate);
+
+                if ($this->debug) {
+                    $output->writeln('run ' . $cmd);
+                }
+
                 $exec->run($cmd);
                 $output->writeln('Database is dumped to ' . $tmpDb);
         }
